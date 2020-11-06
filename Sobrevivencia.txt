@@ -1,0 +1,113 @@
+extensions [table]
+tribes-own [speed energy constitution melanine]
+
+breed [tribes tribe]
+breed [resources resource]
+
+
+;tundra excluido
+
+; talvez adicionar outras tribos contra
+; fome e sede para tribo
+; Temperatura para cada tribo; Energia - 1 para x ticks; caça - sobrevivência - adaptação (Random) 
+; Temperatura para cada bioma; Recursos; clima (affect everything), animal relacionado;   
+; Recurso comida (animal/planta), água, madeira;
+; Recurso snow = muita água, pouco animal, médio planta, muita madeira
+; Recurso desert = pouca água, pouca comida, pouca planta, pouca madeira
+; Recurso savannah = média água, muito comida, média planta, pouca madeira
+; Recurso prairie = média água, média comida, muita planta , pouca madeira
+
+; Relacionar os atributos do ambiente com a geração de mundo interagindo com a tribo
+
+; cada ação gasta energia, caçar gasta energia, colher gasta energia.
+
+; exemplo: aldeao a 5 blocos de distancia de uma planta, ele vê, prossegue para pegar, gasta -2 energia para mover-se,
+; -3 energia para pegar a planta, ganha 5 de comida;
+
+
+; Variáveis ambientes -  
+
+
+to setup
+  clear-all
+  reset-ticks
+  setup-world
+  setup-tribe
+end
+
+to setup-world
+  let table-biomes table:make
+  let table-tribe table:make
+
+  table:put table-biomes "0" "snow"
+  table:put table-biomes "1" "desert"
+  table:put table-biomes "2" "tundra"
+  table:put table-biomes "3" "savannah"
+  table:put table-biomes "4" "prairie"
+
+  table:put table-tribe "0" "snow"
+  table:put table-tribe "1" "desert"
+  table:put table-tribe "2" "tundra"
+  table:put table-tribe "3" "savannah"
+  table:put table-tribe "4" "prairie"
+
+
+
+  ;let array-biomes(list "snow" "desert" "tundra" "savannah" "prairie")
+  ;let array-tribe(list "snow" "desert" "tundra" "savannah" "prairie")
+  let world 0
+  create-resources resources-quantity
+  ask resources[
+    set ycor random 40
+    set xcor random 40
+    set shape "plant"
+  ]
+
+  ifelse biomes = "snow" [set world 9][
+;    ifelse tribe-origin = "snow"[
+;      ask tribes[
+;      set speed 10
+;      set energy 10
+;      set constitution 50
+;      set melanine false
+;      ]
+;      ][
+;      ifelse tribe-origin = "desert"[][
+;        ifelse tribe-origin = "tundra"[][
+;          ifelse tribe-origin = "savannah"[][
+;            ifelse tribe-origin = "prairie"[][]
+;    ]]]]
+    ifelse biomes = "desert" [set world 28][
+      ifelse biomes = "tundra" [set world 61][
+        ifelse biomes = "savannah" [set world 26][
+          ifelse biomes = "prairie" [set world 67] [stop show "what?"]
+  ]]]]
+  ask patches [set pcolor world]
+
+end
+
+to setup-tribe
+  create-tribes tribe-people
+  ask tribes[
+    set shape "person"
+    set ycor random 40
+    set xcor random 40
+  ]
+  ifelse tribe-origin = "snow" [][
+    ifelse tribe-origin = "desert" [][
+      ifelse tribe-origin = "tundra"[][
+        ifelse tribe-origin = "savannah"[][
+          ifelse tribe-origin = "prairie"[][]
+        ]
+      ]
+    ]
+  ]
+
+
+
+end
+
+
+to go
+
+end
