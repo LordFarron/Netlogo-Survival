@@ -3,14 +3,14 @@ tribes-own [speed energy constitution melanine]
 
 breed [tribes tribe]
 breed [resources resource]
-
+breed [animals animal]
 
 ;tundra excluido
 
 ; talvez adicionar outras tribos contra
 ; fome e sede para tribo
-; Temperatura para cada tribo; Energia - 1 para x ticks; caça - sobrevivência - adaptação (Random) 
-; Temperatura para cada bioma; Recursos; clima (affect everything), animal relacionado;   
+; Temperatura para cada tribo; Energia - 1 para x ticks; caça - sobrevivência - adaptação (Random)
+; Temperatura para cada bioma; Recursos; clima (affect everything), animal relacionado;
 ; Recurso comida (animal/planta), água, madeira;
 ; Recurso snow = muita água, pouco animal, médio planta, muita madeira
 ; Recurso desert = pouca água, pouca comida, pouca planta, pouca madeira
@@ -25,7 +25,11 @@ breed [resources resource]
 ; -3 energia para pegar a planta, ganha 5 de comida;
 
 
-; Variáveis ambientes -  
+; 1 de fome equivale a 5 de energia
+; 1 de sede equivale a 2 de energia
+
+; Toda pessoa que pega comida deposita a comida na variável de comida da tribo, assim sendo, qualquer um que estiver sem comida poderá comer essa comida
+; o mesmo dito acima vale para a água
 
 
 to setup
@@ -41,66 +45,73 @@ to setup-world
 
   table:put table-biomes "0" "snow"
   table:put table-biomes "1" "desert"
-  table:put table-biomes "2" "tundra"
-  table:put table-biomes "3" "savannah"
-  table:put table-biomes "4" "prairie"
+  table:put table-biomes "2" "savannah"
+  table:put table-biomes "3" "prairie"
 
   table:put table-tribe "0" "snow"
   table:put table-tribe "1" "desert"
-  table:put table-tribe "2" "tundra"
-  table:put table-tribe "3" "savannah"
-  table:put table-tribe "4" "prairie"
+  table:put table-tribe "2" "savannah"
+  table:put table-tribe "3" "prairie"
 
+  ;let array-biomes(list "snow" "desert" "savannah" "prairie")
+  ;let array-tribe(list "snow" "desert" "savannah" "prairie")
 
-
-  ;let array-biomes(list "snow" "desert" "tundra" "savannah" "prairie")
-  ;let array-tribe(list "snow" "desert" "tundra" "savannah" "prairie")
   let world 0
-  create-resources resources-quantity
+  create-resources plants-quantity
   ask resources[
-    set ycor random 40
-    set xcor random 40
+    set ycor -32 + random 64
+    set xcor -32 + random 64
     set shape "plant"
   ]
+  create-animals animals-quantity
+  ask animals[
+    set ycor -32 + random 64
+    set xcor -32 + random 64
+    set shape "cow"
+  ]
 
-  ifelse biomes = "snow" [set world 9][
-;    ifelse tribe-origin = "snow"[
-;      ask tribes[
-;      set speed 10
-;      set energy 10
-;      set constitution 50
-;      set melanine false
-;      ]
-;      ][
-;      ifelse tribe-origin = "desert"[][
-;        ifelse tribe-origin = "tundra"[][
-;          ifelse tribe-origin = "savannah"[][
-;            ifelse tribe-origin = "prairie"[][]
-;    ]]]]
-    ifelse biomes = "desert" [set world 28][
-      ifelse biomes = "tundra" [set world 61][
-        ifelse biomes = "savannah" [set world 26][
-          ifelse biomes = "prairie" [set world 67] [stop show "what?"]
-  ]]]]
+
+  ifelse biomes = "snow" [
+    set world 9
+    set plants-quantity 15
+    set animals-quantity 10
+    
+  ][
+    ifelse biomes = "desert" [
+    set world 28
+    set plants-quantity 2
+    set animals-quantity 5
+    
+  ][
+     ifelse biomes = "savannah" [
+     set world 26
+     set plants-quantity 10
+     set animals-quantity 10
+     
+      ][
+      ifelse biomes = "prairie" [
+      set world 67
+      set plants-quantity 2
+      set animals-quantity 15
+        ] [stop show "what?"]
+  ]]]
   ask patches [set pcolor world]
 
 end
 
 to setup-tribe
+  let forma 0
   create-tribes tribe-people
   ask tribes[
     set shape "person"
-    set ycor random 40
-    set xcor random 40
-  ]
-  ifelse tribe-origin = "snow" [][
-    ifelse tribe-origin = "desert" [][
-      ifelse tribe-origin = "tundra"[][
-        ifelse tribe-origin = "savannah"[][
-          ifelse tribe-origin = "prairie"[][]
-        ]
-      ]
-    ]
+    set ycor -32 + random 64
+    set xcor -32 + random 64
+    set life life
+    set energy energy
+    set constitution constitution
+    set melanine melanine
+    set speed speed
+    set start-with-food start-with-food
   ]
 
 
@@ -109,5 +120,34 @@ end
 
 
 to go
+  find-objective
+  move-turtles
+  collect-objective
+  
+  
+  
+end
 
+
+
+to find-objective
+  
+  
+end
+
+
+to move-turtles
+   ask tribes [
+    right random 360
+    forward 1
+    set energy energy - 1
+    ask patches in-cone 6 60[
+      set pcolor red
+    ]
+  ]
+end
+
+
+to collect-objective
+  
 end
